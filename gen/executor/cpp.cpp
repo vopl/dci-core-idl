@@ -1191,8 +1191,8 @@ namespace dci::idl::gen::executor
 
                 _out<<"static_assert(alignof(MdState) >= alignof(WiresBundlesContainer<"; walk(v->prepareFullScopedName()); _out<<">));"<<el;
                 _out<<"const "<<nameInPrimitives("uint32")<<" size = sizeof(MdState) + sizeof(WiresBundlesContainer<"; walk(v->prepareFullScopedName()); _out<<">);"<<el;
-                _out<<"MdState* mds = new (mm::heap::alloc<size>()) MdState(mdDescriptor<"; walk(v->prepareFullScopedName()); _out<<">);"<<el;
-                _out<<"new (&mds->getWiresBundlesContainer<char>()) WiresBundlesContainer<"; walk(v->prepareFullScopedName()); _out<<">;"<<el;
+                _out<<"MdState* mds = new (mm::heap::alloc<size>()) MdState{mdDescriptor<"; walk(v->prepareFullScopedName()); _out<<">};"<<el;
+                _out<<"new (&mds->getWiresBundlesContainer<char>()) WiresBundlesContainer<"; walk(v->prepareFullScopedName()); _out<<">{};"<<el;
                 _out<<"return mds;"<<el;
             }
 

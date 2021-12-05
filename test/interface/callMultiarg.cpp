@@ -21,7 +21,7 @@ TEST(idl, interface_callMultiarg)
         h3::Rectangle<> r;
         r.init();
 
-        h3::Object<>::Opposite o(r);
+        h3::Object<>::Opposite o{r};
 
         int callMarker = 0;
 
@@ -52,27 +52,27 @@ TEST(idl, interface_callMultiarg)
             callMarker=42;
 
             EXPECT_EQ(a3, true);
-            EXPECT_EQ(a4, int8(4));
-            EXPECT_EQ(a5, int16(5));
-            EXPECT_EQ(a6, int32(6));
-            EXPECT_EQ(a7, int64(7));
-            EXPECT_EQ(a8, uint8(8));
-            EXPECT_EQ(a9, uint16(9));
-            EXPECT_EQ(a10, uint32(10));
-            EXPECT_EQ(a11, uint64(11));
-            EXPECT_FLOAT_EQ(a12, real32(12));
-            EXPECT_FLOAT_EQ(a13, real64(13));
-            EXPECT_EQ(a14, String("14"));
-            EXPECT_EQ(a15, Bytes());
-            EXPECT_EQ(a16, IId());
-            EXPECT_EQ(a17, (Array<String, 2>({"17", "18"})));
-            EXPECT_EQ(a19, (Set<String>({"19", "20"})));
-            EXPECT_EQ(a21, (Map<String, Bytes>({{"21", Bytes()}, {"22", Bytes()}})));
-            EXPECT_EQ(a23, (List<String>({"23", "24"})));
-            EXPECT_EQ(*a25,(*Ptr<String>(new String("25"))));
+            EXPECT_EQ(a4, int8{4});
+            EXPECT_EQ(a5, int16{5});
+            EXPECT_EQ(a6, int32{6});
+            EXPECT_EQ(a7, int64{7});
+            EXPECT_EQ(a8, uint8{8});
+            EXPECT_EQ(a9, uint16{9});
+            EXPECT_EQ(a10, uint32{10});
+            EXPECT_EQ(a11, uint64{11});
+            EXPECT_FLOAT_EQ(a12, real32{12});
+            EXPECT_FLOAT_EQ(a13, real64{13});
+            EXPECT_EQ(a14, String{"14"});
+            EXPECT_EQ(a15, Bytes{});
+            EXPECT_EQ(a16, IId{});
+            EXPECT_EQ(a17, (Array<String, 2>{{"17", "18"}}));
+            EXPECT_EQ(a19, (Set<String>{"19", "20"}));
+            EXPECT_EQ(a21, (Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}}));
+            EXPECT_EQ(a23, (List<String>{"23", "24"}));
+            EXPECT_EQ(*a25,(*Ptr<String>{new String{"25"}}));
             EXPECT_EQ(a26, (Tuple<bool_, int8, String>{true, 26, "27"}));
-            EXPECT_EQ(a27, Interface());
-            EXPECT_EQ(a28, h3::Object<>());
+            EXPECT_EQ(a27, Interface{});
+            EXPECT_EQ(a28, h3::Object<>{});
         };
 
 
@@ -80,27 +80,27 @@ TEST(idl, interface_callMultiarg)
         {
             r->multiarg(
                 true,
-                int8(4),
-                int16(5),
-                int32(6),
-                int64(7),
-                uint8(8),
-                uint16(9),
-                uint32(10),
-                uint64(11),
-                real32(12),
-                real64(13),
-                String("14"),
-                Bytes(),
-                IId(),
-                Array<String, 2>({"17", "18"}),
-                Set<String>({"19", "20"}),
-                Map<String, Bytes>({{"21", Bytes()}, {"22", Bytes()}}),
-                List<String>({"23", "24"}),
-                Ptr<String>(new String("25")),
+                int8{4},
+                int16{5},
+                int32{6},
+                int64{7},
+                uint8{8},
+                uint16{9},
+                uint32{10},
+                uint64{11},
+                real32{12},
+                real64{13},
+                String{"14"},
+                Bytes{},
+                IId{},
+                Array<String, 2>{{"17", "18"}},
+                Set<String>{"19", "20"},
+                Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}},
+                List<String>{"23", "24"},
+                Ptr<String>{new String{"25"}},
                 Tuple<bool_, int8, String>{true, 26, "27"},
-                Interface(),
-                h3::Object<>()
+                Interface{},
+                h3::Object<>{}
             );
 
             EXPECT_EQ(callMarker, 42);

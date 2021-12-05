@@ -58,7 +58,10 @@ target_link_libraries(${UNAME}-transpiler PRIVATE
     ${UNAME}-gen
     crypto
     utils
-    boost_program_options)
+)
+
+find_package(Boost REQUIRED COMPONENTS program_options)
+target_link_libraries(${UNAME}-transpiler PRIVATE Boost::program_options)
 
 ############################################################
 file(GLOB_RECURSE TST test/* )
@@ -106,10 +109,11 @@ if(TARGET ${UNAME}-test-noenv)
     file(GLOB_RECURSE resources ${rsrc}/*.idl )
     foreach(resource ${resources})
         file(RELATIVE_PATH fname ${rsrc} ${resource})
+        file(RELATIVE_PATH path4Comment ${CMAKE_BINARY_DIR} ${rdst}/${fname})
         add_custom_command(OUTPUT ${rdst}/${fname}
                            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${rsrc}/${fname} ${rdst}/${fname}
                            DEPENDS ${rsrc}/${fname}
-                           COMMENT "Generating ${rdst}/${fname}"
+                           COMMENT "Generating ${path4Comment}"
         )
         target_sources(${UNAME}-test-noenv PRIVATE ${rdst}/${fname})
 

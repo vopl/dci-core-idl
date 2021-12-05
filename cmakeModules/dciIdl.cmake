@@ -49,27 +49,30 @@ function(dciIdl target gen)
     if("${CMAKE_GENERATOR}" STREQUAL "Ninja")
         # for Ninja
         set(outFileDeps ${outDir}/${NAME}.d)
+        file(RELATIVE_PATH path4Comment ${CMAKE_BINARY_DIR} ${outFile})
         add_custom_command(OUTPUT ${outFile}
-            COMMAND idl-transpiler ${include} ${sources} --generate ${gen} ${options} --${gen}-output-file ${outFile} --generate deps --deps-target ninja --deps-ninja-artifact ${outFile} --deps-output-file ${outFileDeps}
+            COMMAND idl-transpiler-cmd ${include} ${sources} --generate ${gen} ${options} --${gen}-output-file ${outFile} --generate deps --deps-target ninja --deps-ninja-artifact ${outFile} --deps-output-file ${outFileDeps}
             VERBATIM
-            DEPENDS idl-transpiler
+            DEPENDS idl-transpiler idl-transpiler-cmd
             DEPFILE ${outFileDeps}
-            COMMENT "Generating ${outFile}"
+            COMMENT "Generating ${path4Comment}"
         )
     else()
         # for Makefiles
         set(outFileDeps ${outDir}/${NAME}.hpp.d.hpp)
+        file(RELATIVE_PATH path4Comment ${CMAKE_BINARY_DIR} ${outFileDeps})
         add_custom_command(OUTPUT ${outFileDeps}
-            COMMAND idl-transpiler ${include} ${sources} --generate deps --deps-target cpp --deps-output-file ${outFileDeps}
+            COMMAND idl-transpiler-cmd ${include} ${sources} --generate deps --deps-target cpp --deps-output-file ${outFileDeps}
             VERBATIM
-            DEPENDS idl-transpiler
-            COMMENT "Generating ${outFileDeps}"
+            DEPENDS idl-transpiler idl-transpiler-cmd
+            COMMENT "Generating ${path4Comment}"
         )
+        file(RELATIVE_PATH path4Comment ${CMAKE_BINARY_DIR} ${outFile})
         add_custom_command(OUTPUT ${outFile}
-            COMMAND idl-transpiler ${include} ${sources} --generate ${gen} ${options} --${gen}-output-file ${outFile}
+            COMMAND idl-transpiler-cmd ${include} ${sources} --generate ${gen} ${options} --${gen}-output-file ${outFile}
             VERBATIM
-            DEPENDS idl-transpiler ${outFileDeps}
-            COMMENT "Generating ${outFile}"
+            DEPENDS idl-transpiler idl-transpiler-cmd ${outFileDeps}
+            COMMENT "Generating ${path4Comment}"
             IMPLICIT_DEPENDS CXX ${outFileDeps}
         )
     endif()

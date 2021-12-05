@@ -21,34 +21,34 @@ TEST(idl, interface_callRet)
         h3::Rectangle<> r;
         r.init();
 
-        h3::Object<>::Opposite o(r);
+        h3::Object<>::Opposite o{r};
 
         int callMarker = 0;
 
         o->rn()         += [&](){callMarker=1;};
         o->rv()         += [&](){callMarker=2;return dci::cmt::readyFuture<void>();};
         o->rb()         += [&](){callMarker=3;return dci::cmt::readyFuture(true);};
-        o->ri8()        += [&](){callMarker=4;return dci::cmt::readyFuture(int8(4));};
-        o->ri16()       += [&](){callMarker=5;return dci::cmt::readyFuture(int16(5));};
-        o->ri32()       += [&](){callMarker=6;return dci::cmt::readyFuture(int32(6));};
-        o->ri64()       += [&](){callMarker=7;return dci::cmt::readyFuture(int64(7));};
-        o->rui8()       += [&](){callMarker=8;return dci::cmt::readyFuture(uint8(8));};
-        o->rui16()      += [&](){callMarker=9;return dci::cmt::readyFuture(uint16(9));};
-        o->rui32()      += [&](){callMarker=10;return dci::cmt::readyFuture(uint32(10));};
-        o->rui64()      += [&](){callMarker=11;return dci::cmt::readyFuture(uint64(11));};
-        o->rr32()       += [&](){callMarker=12;return dci::cmt::readyFuture(real32(12));};
-        o->rr64()       += [&](){callMarker=13;return dci::cmt::readyFuture(real64(13));};
-        o->rs()         += [&](){callMarker=14;return dci::cmt::readyFuture(String("14"));};
-        o->rbt()        += [&](){callMarker=15;return dci::cmt::readyFuture(Bytes());};
-        o->riid()       += [&](){callMarker=16;return dci::cmt::readyFuture(IId());};
-        o->rarray()     += [&](){callMarker=17;return dci::cmt::readyFuture(Array<String, 2>({"17", "18"}));};
-        o->rset()       += [&](){callMarker=19;return dci::cmt::readyFuture(Set<String>({"19", "20"}));};
-        o->rmap()       += [&](){callMarker=21;return dci::cmt::readyFuture(Map<String, Bytes>({{"21", Bytes()}, {"22", Bytes()}}));};
-        o->rlist()      += [&](){callMarker=23;return dci::cmt::readyFuture(List<String>({"23", "24"}));};
-        o->rptr()       += [&](){callMarker=25;return dci::cmt::readyFuture(Ptr<String>(new String("25")));};
+        o->ri8()        += [&](){callMarker=4;return dci::cmt::readyFuture(int8{4});};
+        o->ri16()       += [&](){callMarker=5;return dci::cmt::readyFuture(int16{5});};
+        o->ri32()       += [&](){callMarker=6;return dci::cmt::readyFuture(int32{6});};
+        o->ri64()       += [&](){callMarker=7;return dci::cmt::readyFuture(int64{7});};
+        o->rui8()       += [&](){callMarker=8;return dci::cmt::readyFuture(uint8{8});};
+        o->rui16()      += [&](){callMarker=9;return dci::cmt::readyFuture(uint16{9});};
+        o->rui32()      += [&](){callMarker=10;return dci::cmt::readyFuture(uint32{10});};
+        o->rui64()      += [&](){callMarker=11;return dci::cmt::readyFuture(uint64{11});};
+        o->rr32()       += [&](){callMarker=12;return dci::cmt::readyFuture(real32{12});};
+        o->rr64()       += [&](){callMarker=13;return dci::cmt::readyFuture(real64{13});};
+        o->rs()         += [&](){callMarker=14;return dci::cmt::readyFuture(String{"14"});};
+        o->rbt()        += [&](){callMarker=15;return dci::cmt::readyFuture(Bytes{});};
+        o->riid()       += [&](){callMarker=16;return dci::cmt::readyFuture(IId{});};
+        o->rarray()     += [&](){callMarker=17;return dci::cmt::readyFuture(Array<String, 2>{{"17", "18"}});};
+        o->rset()       += [&](){callMarker=19;return dci::cmt::readyFuture(Set<String>{"19", "20"});};
+        o->rmap()       += [&](){callMarker=21;return dci::cmt::readyFuture(Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}});};
+        o->rlist()      += [&](){callMarker=23;return dci::cmt::readyFuture(List<String>{"23", "24"});};
+        o->rptr()       += [&](){callMarker=25;return dci::cmt::readyFuture(Ptr<String>{new String{"25"}});};
         o->rtuple()     += [&](){callMarker=26;return dci::cmt::readyFuture(Tuple<bool_, int8, String>{true, 26, "27"});};
-        o->rinterface() += [&](){callMarker=27;return dci::cmt::readyFuture(Interface());};
-        o->rx()         += [&](){callMarker=28;return dci::cmt::readyFuture(h3::Object<>());};
+        o->rinterface() += [&](){callMarker=27;return dci::cmt::readyFuture(Interface{});};
+        o->rx()         += [&](){callMarker=28;return dci::cmt::readyFuture(h3::Object<>{});};
 
 
         for(std::size_t k(0); k<3; ++k)
@@ -78,7 +78,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 4);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), int8(4));
+                EXPECT_EQ(v.value(), int8{4});
             }
 
             {
@@ -86,7 +86,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 5);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), int16(5));
+                EXPECT_EQ(v.value(), int16{5});
             }
 
             {
@@ -94,7 +94,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 6);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), int32(6));
+                EXPECT_EQ(v.value(), int32{6});
             }
 
             {
@@ -102,7 +102,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 7);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), int64(7));
+                EXPECT_EQ(v.value(), int64{7});
             }
 
             {
@@ -110,7 +110,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 8);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), uint8(8));
+                EXPECT_EQ(v.value(), uint8{8});
             }
 
             {
@@ -118,7 +118,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 9);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), uint16(9));
+                EXPECT_EQ(v.value(), uint16{9});
             }
 
             {
@@ -126,7 +126,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 10);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), uint32(10));
+                EXPECT_EQ(v.value(), uint32{10});
             }
 
             {
@@ -134,7 +134,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 11);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), uint64(11));
+                EXPECT_EQ(v.value(), uint64{11});
             }
 
             {
@@ -142,7 +142,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 12);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_FLOAT_EQ(v.value(), real32(12));
+                EXPECT_FLOAT_EQ(v.value(), real32{12});
             }
 
             {
@@ -150,7 +150,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 13);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_FLOAT_EQ(v.value(), real64(13));
+                EXPECT_FLOAT_EQ(v.value(), real64{13});
             }
 
             {
@@ -158,7 +158,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 14);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), String("14"));
+                EXPECT_EQ(v.value(), String{"14"});
             }
 
             {
@@ -166,7 +166,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 15);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), Bytes());
+                EXPECT_EQ(v.value(), Bytes{});
             }
 
             {
@@ -174,7 +174,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 16);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), IId());
+                EXPECT_EQ(v.value(), IId{});
             }
 
             {
@@ -182,7 +182,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 17);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (Array<String, 2>({"17", "18"})));
+                EXPECT_EQ(v.value(), (Array<String, 2>{{"17", "18"}}));
             }
 
             {
@@ -190,7 +190,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 19);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (Set<String>({"19", "20"})));
+                EXPECT_EQ(v.value(), (Set<String>{"19", "20"}));
             }
 
             {
@@ -198,7 +198,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 21);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (Map<String, Bytes>({{"21", Bytes()}, {"22", Bytes()}})));
+                EXPECT_EQ(v.value(), (Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}}));
             }
 
             {
@@ -206,7 +206,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 23);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (List<String>({"23", "24"})));
+                EXPECT_EQ(v.value(), (List<String>{"23", "24"}));
             }
 
             {
@@ -214,7 +214,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 25);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(*v.value(), (*Ptr<String>(new String("25"))));
+                EXPECT_EQ(*v.value(), (*Ptr<String>{new String{"25"}}));
             }
 
             {
@@ -230,7 +230,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 27);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (Interface()));
+                EXPECT_EQ(v.value(), (Interface{}));
             }
 
             {
@@ -238,7 +238,7 @@ TEST(idl, interface_callRet)
                 EXPECT_EQ(callMarker, 28);
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
-                EXPECT_EQ(v.value(), (h3::Object<>()));
+                EXPECT_EQ(v.value(), (h3::Object<>{}));
             }
         }
     }
