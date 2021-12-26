@@ -58,6 +58,7 @@ target_link_libraries(${UNAME}-transpiler PRIVATE
     ${UNAME}-gen
     crypto
     utils
+    integration
 )
 
 find_package(Boost REQUIRED COMPONENTS program_options)

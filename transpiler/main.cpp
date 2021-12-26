@@ -5,6 +5,8 @@
    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
    You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. */
 
+#include <dci/integration/info.hpp>
+
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <filesystem>
@@ -150,7 +152,7 @@ int main(int argc, const char **argv)
     ////////////////////////////////////////////////////////////////////////////////
     if(vars.empty() || vars.count("version"))
     {
-        std::cout << "this is a version info" << std::endl;
+        std::cout << dci::integration::info::version() << std::endl;
         return EXIT_SUCCESS;
     }
 
