@@ -33,6 +33,7 @@ scope h3
         in rmap() -> map<string, bytes>;
         in rlist() -> list<string>;
         in rptr() -> ptr<string>;
+        in ropt() -> opt<string>;
         in rtuple() -> tuple<bool, int8, string>;
 
         in rinterface() -> interface;
@@ -60,6 +61,7 @@ scope h3
         in amap(map<string, bytes>);
         in alist(list<string>);
         in aptr(ptr<string>);
+        in aopt(opt<string>);
         in atuple(tuple<bool, int8, string>);
 
         in ainterface(interface);
@@ -87,6 +89,7 @@ scope h3
                 map<string, bytes>,
                 list<string>,
                 ptr<string>,
+                opt<string>,
                 tuple<bool, int8, string>,
 
                 interface,

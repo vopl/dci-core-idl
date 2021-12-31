@@ -11,6 +11,10 @@
 #include "error.hpp"
 
 #include <boost/spirit/home/x3.hpp>
+#include <boost/spirit/home/x3/auxiliary/eps.hpp>
+#include <boost/spirit/home/x3/core/call.hpp>
+#include <boost/spirit/home/x3/support/unused.hpp>
+#include <cctype>
 
 //https://github.com/boostorg/spirit/issues/675
 // в 1.76 стреляет, по идее в 1.77 вольют фикс
@@ -58,6 +62,52 @@ namespace dci::idl::prs::grammar
     BOOST_SPIRIT_DEFINE(identifier)
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    struct KwParser : x3::parser<KwParser>
+    {
+        using attribute_type = x3::unused_type;
+
+        constexpr KwParser(const char* sample)
+          : _sample{sample}
+        {}
+
+        template <typename Iterator, typename Context>
+        bool parse(Iterator& first, const Iterator& last, const Context& context, x3::unused_type, x3::unused_type) const
+        {
+            x3::skip_over(first, last, context);
+
+            const char* sample = _sample;
+            Iterator iter = first;
+
+            while(*sample)
+            {
+                if(iter == last || *sample != *iter)
+                {
+                    return false;
+                }
+
+                ++sample;
+                ++iter;
+            }
+
+            if(iter != last && (std::isalnum(*iter) || std::isdigit(*iter) || '_' == *iter))
+            {
+                return false;
+            }
+
+            first = iter;
+            return true;
+        }
+
+        const char* _sample;
+    };
+
+    constexpr auto kw(const char *value)
+    {
+        return KwParser{value};
+        //return identifier[([value](auto& ctx) { if(x3::_attr(ctx) != value) x3::_pass(ctx) = false; })];
+    }
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr x3::rule<struct integerString_tag, std::string> integerString {""};
     constexpr auto integerString_def = x3::lexeme[(x3::string("0x") >> *x3::xdigit) | (-x3::char_('-') >> *x3::digit)];
     BOOST_SPIRIT_DEFINE(integerString)
@@ -65,7 +115,7 @@ namespace dci::idl::prs::grammar
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto error(const char *msg)
     {
-        return x3::eps[([=](auto& ctx){ throw Error{msg, _where(ctx).begin()}; })];
+        return x3::eps[([=](auto& ctx){ throw Error{msg, x3::_where(ctx).begin()}; })];
     }
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
@@ -76,6 +126,7 @@ namespace dci::idl::prs::grammar
         ONE(set,            Set)                \
         ONE(map,            Map)                \
         ONE(ptr,            Ptr)                \
+        ONE(opt,            Opt)                \
         ONE(array,          Array)              \
         ONE(name,           Name)               \
         ONE(scopedName,     ScopedName)         \
@@ -112,36 +163,36 @@ namespace dci::idl::prs::grammar
     constexpr auto primitive_def =
         x3::eps[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SPrimitive>(); })] >>
         (
-            x3::lit("void")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::void_;       })] |
-            x3::lit("bool")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::bool_;       })] |
-            x3::lit("int8")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int8;        })] |
-            x3::lit("int16")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int16;       })] |
-            x3::lit("int32")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int32;       })] |
-            x3::lit("int64")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int64;       })] |
-            x3::lit("uint8")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint8;       })] |
-            x3::lit("uint16")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint16;      })] |
-            x3::lit("uint32")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint32;      })] |
-            x3::lit("uint64")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint64;      })] |
-            x3::lit("real32")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::real32;      })] |
-            x3::lit("real64")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::real64;      })] |
-            x3::lit("string")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::string;      })] |
-            x3::lit("bytes")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::bytes;       })] |
-            x3::lit("interface")[([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::interface;   })] |
-            x3::lit("iid")      [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::iid;         })] |
-            x3::lit("ilid")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::ilid;        })] |
-            x3::lit("exception")[([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::exception;   })]
+            kw("void")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::void_;       })] |
+            kw("bool")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::bool_;       })] |
+            kw("int8")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int8;        })] |
+            kw("int16")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int16;       })] |
+            kw("int32")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int32;       })] |
+            kw("int64")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int64;       })] |
+            kw("uint8")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint8;       })] |
+            kw("uint16")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint16;      })] |
+            kw("uint32")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint32;      })] |
+            kw("uint64")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::uint64;      })] |
+            kw("real32")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::real32;      })] |
+            kw("real64")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::real64;      })] |
+            kw("string")   [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::string;      })] |
+            kw("bytes")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::bytes;       })] |
+            kw("interface")[([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::interface;   })] |
+            kw("iid")      [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::iid;         })] |
+            kw("ilid")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::ilid;        })] |
+            kw("exception")[([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::exception;   })]
         );
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto tuple_def =
-        x3::lit("tuple")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<STuple>(); })] >>
+        kw("tuple")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<STuple>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         -(typeUse[([](auto& ctx){ x3::_val(ctx)->elementTypes.push_back(x3::_attr(ctx)); })] % x3::lit(",")) >>
         (x3::lit('>') | error("'>' expected"));
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto list_def =
-        x3::lit("list")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SList>(); })] >>
+        kw("list")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SList>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         (
             typeUse[([](auto& ctx){ x3::_val(ctx)->elementType = x3::_attr(ctx); })] |
@@ -151,7 +202,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto set_def =
-        x3::lit("set")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SSet>(); })] >>
+        kw("set")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SSet>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         (
             typeUse[([](auto& ctx){ x3::_val(ctx)->elementType = x3::_attr(ctx); })] |
@@ -161,7 +212,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto map_def =
-        x3::lit("map")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SMap>(); })] >>
+        kw("map")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SMap>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         (
             typeUse[([](auto& ctx){ x3::_val(ctx)->keyType = x3::_attr(ctx); })] |
@@ -177,7 +228,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto ptr_def =
-        x3::lit("ptr")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SPtr>(); })] >>
+        kw("ptr")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SPtr>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         (
             typeUse[([](auto& ctx){ x3::_val(ctx)->valueType = x3::_attr(ctx); })] |
@@ -186,8 +237,18 @@ namespace dci::idl::prs::grammar
         (x3::lit('>') | error("'>' expected"));
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    constexpr auto opt_def =
+        kw("opt")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SOpt>(); })] >>
+        (x3::lit('<') | error("'<' expected")) >>
+        (
+            typeUse[([](auto& ctx){ x3::_val(ctx)->valueType = x3::_attr(ctx); })] |
+            error("optional value type expected")
+        ) >>
+        (x3::lit('>') | error("'>' expected"));
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto array_def =
-        x3::lit("array")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SArray>(); })] >>
+        kw("array")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SArray>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         (
             typeUse[([](auto& ctx){ x3::_val(ctx)->elementType = x3::_attr(ctx); })] |
@@ -228,11 +289,11 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto typeUse_def =
-        primitive | tuple | list | set | map | ptr | array | variant | scopedName;
+        primitive | tuple | list | set | map | ptr | opt | array | variant | scopedName;
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto alias_def =
-        x3::lit("alias")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SAlias>(); })] >>
+        kw("alias")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SAlias>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("alias name expected")
@@ -246,7 +307,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto variant_def =
-        x3::lit("variant")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SVariant>(); })] >>
+        kw("variant")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SVariant>(); })] >>
         (x3::lit('<') | error("'<' expected")) >>
         -(typeUse[([](auto& ctx){ x3::_val(ctx)->elementTypes.push_back(x3::_attr(ctx)); })] % x3::lit(',')) >>
         (x3::lit('>') | error("'>' expected"));
@@ -262,7 +323,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto struct__def =
-        x3::lit("struct")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SStruct>(); })] >>
+        kw("struct")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SStruct>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("struct name expected")
@@ -299,7 +360,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto enum__def =
-        x3::lit("enum")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SEnum>(); })] >>
+        kw("enum")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SEnum>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("enum name expected")
@@ -323,7 +384,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto flags_def =
-        x3::lit("flags")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SFlags>(); })] >>
+        kw("flags")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SFlags>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("flags name expected")
@@ -345,7 +406,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto exception_def =
-        x3::lit("exception")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SException>(); })] >>
+        kw("exception")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SException>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("exception name expected")
@@ -375,8 +436,8 @@ namespace dci::idl::prs::grammar
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto method_def =
         (
-            x3::lit("in") [([](auto& ctx){ x3::_val(ctx) = std::make_shared<SMethod>(); x3::_val(ctx)->direction = MethodDirection::in;  })] |
-            x3::lit("out")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SMethod>(); x3::_val(ctx)->direction = MethodDirection::out; })]
+            kw("in") [([](auto& ctx){ x3::_val(ctx) = std::make_shared<SMethod>(); x3::_val(ctx)->direction = MethodDirection::in;  })] |
+            kw("out")[([](auto& ctx){ x3::_val(ctx) = std::make_shared<SMethod>(); x3::_val(ctx)->direction = MethodDirection::out; })]
         ) >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
@@ -404,7 +465,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto interface_def =
-        x3::lit("interface")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SInterface>(); })] >>
+        kw("interface")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SInterface>(); })] >>
         (
             name[([](auto& ctx){ x3::_val(ctx)->name = x3::_attr(ctx); })] |
             error("interface name expected")
@@ -432,7 +493,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto scope_def =
-        x3::lit("scope")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SScope>(); })] >>
+        kw("scope")[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SScope>(); })] >>
         (
             (
                 name[([](auto& ctx) { x3::_val(ctx)->nestedNames.push_back(x3::_attr(ctx)); })] |
@@ -452,7 +513,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto include_def =
-        x3::lit("include") >>
+        kw("include") >>
         x3::eps[([](auto& ctx){ x3::get<State>(ctx).storePos(_where(ctx).begin()); })] >>
         (
             quotedString[([](auto& ctx){ const Scope res = x3::get<State>(ctx).process(_attr(ctx), false); if(res) x3::_val(ctx) = res->decls; })] |
@@ -461,7 +522,7 @@ namespace dci::idl::prs::grammar
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto require_def =
-        x3::lit("require") >>
+        kw("require") >>
         x3::eps[([](auto& ctx){ x3::get<State>(ctx).storePos(_where(ctx).begin()); })] >>
         (
             quotedString[([](auto& ctx){ const Scope res = x3::get<State>(ctx).process(_attr(ctx), true); if(res) x3::_val(ctx) = res->decls; })] |

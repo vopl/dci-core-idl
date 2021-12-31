@@ -8,20 +8,14 @@
 #pragma once
 
 #include "predecl.hpp"
-#include <boost/variant.hpp>
+#include "typeUse.hpp"
 
 namespace dci::idl::im::ast
 {
-    using TypeUse = boost::variant<
-          Primitive
-        , Tuple
-        , List
-        , Set
-        , Map
-        , Ptr
-        , Opt
-        , Array
-        , Variant
-        , ScopedName
-    >;
+    struct SOpt
+    {
+        TypeUse         valueType;
+
+        Sign            sign;
+    };
 }

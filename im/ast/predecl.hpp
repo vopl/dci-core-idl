@@ -30,6 +30,8 @@ namespace dci::idl::im::ast
     struct SPtr;
     using Ptr = std::shared_ptr<SPtr>;
 
+    struct SOpt;
+    using Opt = std::shared_ptr<SOpt>;
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     struct SList;

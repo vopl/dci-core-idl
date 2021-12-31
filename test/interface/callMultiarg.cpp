@@ -45,9 +45,10 @@ TEST(idl, interface_callMultiarg)
             Map<String, Bytes>         a21,
             List<String>               a23,
             Ptr<String>                a25,
-            Tuple<bool_, int8, String> a26,
-            Interface                  a27,
-            h3::Object<>               a28)
+            Opt<String>                a26,
+            Tuple<bool_, int8, String> a27,
+            Interface                  a28,
+            h3::Object<>               a29)
         {
             callMarker=42;
 
@@ -70,9 +71,10 @@ TEST(idl, interface_callMultiarg)
             EXPECT_EQ(a21, (Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}}));
             EXPECT_EQ(a23, (List<String>{"23", "24"}));
             EXPECT_EQ(*a25,(*Ptr<String>{new String{"25"}}));
-            EXPECT_EQ(a26, (Tuple<bool_, int8, String>{true, 26, "27"}));
-            EXPECT_EQ(a27, Interface{});
-            EXPECT_EQ(a28, h3::Object<>{});
+            EXPECT_EQ(a26, (Opt<String>{String{"25"}}));
+            EXPECT_EQ(a27, (Tuple<bool_, int8, String>{true, 26, "27"}));
+            EXPECT_EQ(a28, Interface{});
+            EXPECT_EQ(a29, h3::Object<>{});
         };
 
 
@@ -98,6 +100,7 @@ TEST(idl, interface_callMultiarg)
                 Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}},
                 List<String>{"23", "24"},
                 Ptr<String>{new String{"25"}},
+                Opt<String>{String{"25"}},
                 Tuple<bool_, int8, String>{true, 26, "27"},
                 Interface{},
                 h3::Object<>{}

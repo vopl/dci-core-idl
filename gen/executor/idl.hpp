@@ -32,6 +32,7 @@ namespace dci::idl::gen::executor
         void walk(const im::ast::Array& v) override;
         void walk(const im::ast::Tuple& v) override;
         void walk(const im::ast::Ptr& v) override;
+        void walk(const im::ast::Opt& v) override;
 
         void walk(const im::ast::List& v) override;
         void walk(const im::ast::Map& v) override;

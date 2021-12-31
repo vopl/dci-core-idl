@@ -30,6 +30,7 @@ namespace dci::idl::gen::executor
         virtual void walk(const im::ast::Array& v);
         virtual void walk(const im::ast::Tuple& v);
         virtual void walk(const im::ast::Ptr& v);
+        virtual void walk(const im::ast::Opt& v);
 
         virtual void walk(const im::ast::List& v);
         virtual void walk(const im::ast::Map& v);

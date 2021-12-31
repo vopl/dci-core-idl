@@ -44,6 +44,7 @@ TEST(idl, interface_callArg)
         o->amap()       += [&](Map<String, Bytes>         a){callMarker=21; EXPECT_EQ(a, (Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}}));};
         o->alist()      += [&](List<String>               a){callMarker=23; EXPECT_EQ(a, (List<String>{"23", "24"}));};
         o->aptr()       += [&](Ptr<String>                a){callMarker=25; EXPECT_EQ(*a,(*Ptr<String>{new String{"25"}}));};
+        o->aopt()       += [&](Opt<String>                a){callMarker=25; EXPECT_EQ(*a,(*Opt<String>{String{"25"}}));};
         o->atuple()     += [&](Tuple<bool_, int8, String> a){callMarker=26; EXPECT_EQ(a, (Tuple<bool_, int8, String>{true, 26, "27"}));};
         o->ainterface() += [&](Interface                  a){callMarker=27; EXPECT_EQ(a, Interface{});};
         o->ax()         += [&](h3::Object<>               a){callMarker=28; EXPECT_EQ(a, h3::Object<>{});};
@@ -143,6 +144,11 @@ TEST(idl, interface_callArg)
 
             {
                 r->aptr(Ptr<String>{new String{"25"}});
+                EXPECT_EQ(callMarker, 25);
+            }
+
+            {
+                r->aopt(Opt<String>{String{"25"}});
                 EXPECT_EQ(callMarker, 25);
             }
 

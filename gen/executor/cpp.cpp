@@ -262,6 +262,14 @@ namespace dci::idl::gen::executor
     }
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    void Cpp::walk(const Opt& v)
+    {
+        _out<<nameInPrimitives("Opt")<<"<";
+        walk(v->valueType);
+        _out<<">";
+    }
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     void Cpp::walk(const List& v)
     {
         _out<<nameInPrimitives("List")<<"<";

@@ -46,6 +46,7 @@ TEST(idl, interface_callRet)
         o->rmap()       += [&](){callMarker=21;return dci::cmt::readyFuture(Map<String, Bytes>{{"21", Bytes{}}, {"22", Bytes{}}});};
         o->rlist()      += [&](){callMarker=23;return dci::cmt::readyFuture(List<String>{"23", "24"});};
         o->rptr()       += [&](){callMarker=25;return dci::cmt::readyFuture(Ptr<String>{new String{"25"}});};
+        o->ropt()       += [&](){callMarker=25;return dci::cmt::readyFuture(Opt<String>{String{"25"}});};
         o->rtuple()     += [&](){callMarker=26;return dci::cmt::readyFuture(Tuple<bool_, int8, String>{true, 26, "27"});};
         o->rinterface() += [&](){callMarker=27;return dci::cmt::readyFuture(Interface{});};
         o->rx()         += [&](){callMarker=28;return dci::cmt::readyFuture(h3::Object<>{});};
@@ -215,6 +216,14 @@ TEST(idl, interface_callRet)
                 EXPECT_TRUE(v.resolved());
                 EXPECT_TRUE(v.waitValue());
                 EXPECT_EQ(*v.value(), (*Ptr<String>{new String{"25"}}));
+            }
+
+            {
+                auto v = r->ropt();
+                EXPECT_EQ(callMarker, 25);
+                EXPECT_TRUE(v.resolved());
+                EXPECT_TRUE(v.waitValue());
+                EXPECT_EQ(v.value(), (Opt<String>{String{"25"}}));
             }
 
             {

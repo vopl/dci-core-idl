@@ -653,6 +653,26 @@ namespace dci::idl::im::proc
         }
 
         /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+        void operator()(SOpt* v)
+        {
+            if(processed(v)) return;
+
+            SignBuilder sb;
+            sb.add("opt");
+
+            sb.add(static_cast<std::uint32_t>(v->valueType.which()));
+            boost::apply_visitor([&](const auto& sptr)
+            {
+                (*this)(sptr.get());
+
+                sb.add("valueType");
+                sb.add(sptr->sign);
+            }, v->valueType);
+
+            v->sign = sb.finish();
+        }
+
+        /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
         void operator()(SArray* v)
         {
             if(processed(v)) return;

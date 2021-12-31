@@ -99,6 +99,12 @@ namespace dci::idl::gen::executor
     }
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    void Text::walk(const Opt& v)
+    {
+        walk(v->valueType);
+    }
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     void Text::walk(const List& v)
     {
         walk(v->elementType);
@@ -278,6 +284,7 @@ namespace dci::idl::gen::executor
         if(boost::get<Set           >(&v)) walk(boost::get<Set          >(v));
         if(boost::get<Map           >(&v)) walk(boost::get<Map          >(v));
         if(boost::get<Ptr           >(&v)) walk(boost::get<Ptr          >(v));
+        if(boost::get<Opt           >(&v)) walk(boost::get<Opt          >(v));
         if(boost::get<Array         >(&v)) walk(boost::get<Array        >(v));
         if(boost::get<Variant       >(&v)) walk(boost::get<Variant        >(v));
         if(boost::get<ScopedName    >(&v)) walk(boost::get<ScopedName   >(v));

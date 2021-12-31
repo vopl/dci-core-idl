@@ -14,6 +14,7 @@
 #include "ast/array.hpp"
 #include "ast/tuple.hpp"
 #include "ast/ptr.hpp"
+#include "ast/opt.hpp"
 
 #include "ast/list.hpp"
 #include "ast/map.hpp"
