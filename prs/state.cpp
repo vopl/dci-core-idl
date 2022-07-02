@@ -124,7 +124,7 @@ namespace dci::idl::prs
         }
         catch(const Error& e)
         {
-            pushError(std::string{"error: "} + e.what(), e.pos());
+            pushError(e.what(), e.pos());
             return {};
         }
 

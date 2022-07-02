@@ -9,6 +9,7 @@
 
 #include "im/ast.hpp"
 #include "error.hpp"
+#include "state.hpp"
 
 #include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/auxiliary/eps.hpp>

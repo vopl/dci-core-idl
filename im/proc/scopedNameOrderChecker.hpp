@@ -153,11 +153,11 @@ namespace dci::idl::im::proc
             if(_declared.end() == std::find(_declared.begin(), _declared.end(), se))
             {
                 _errors.emplace_back(ErrorInfo {
-                                      "using before declaration: "+v->toString(),
+                                      "using before declaration `"+v->toString()+"'",
                                       v->pos});
 
                 _errors.emplace_back(ErrorInfo {
-                                      "declaration here: "+se->name->value,
+                                      "declaration here `"+se->name->value+"'",
                                       se->name->pos});
             }
 

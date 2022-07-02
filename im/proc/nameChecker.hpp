@@ -74,13 +74,13 @@ namespace dci::idl::im::proc
             if(_entities.end() != fres)
             {
                 _errors.emplace_back(ErrorInfo {
-                                      "duplicate name: "+cur->value,
+                                      "duplicate name `"+cur->value+"'",
                                       cur->pos});
 
                 const Name& prev = fres->second;
 
                 _errors.emplace_back(ErrorInfo {
-                                      "previous declaration of "+prev->value,
+                                      "previous declaration of `"+prev->value+"'",
                                       prev->pos});
 
                 return false;
@@ -109,11 +109,11 @@ namespace dci::idl::im::proc
             if(prev)
             {
                 _errors.emplace_back(ErrorInfo {
-                                      "duplicate name: "+cur->value,
+                                      "duplicate name `"+cur->value+"'",
                                       cur->pos});
 
                 _errors.emplace_back(ErrorInfo {
-                                      "previous declaration of "+prev->value,
+                                      "previous declaration of `"+prev->value+"'",
                                       prev->pos});
 
                 return false;
@@ -156,13 +156,13 @@ namespace dci::idl::im::proc
                     if(!ires.second)
                     {
                         _errors.emplace_back(ErrorInfo {
-                                              "duplicate name: "+cur->value,
+                                              "duplicate name `"+cur->value+"'",
                                               cur->pos});
 
                         const Name& prev = ires.first->second;
 
                         _errors.emplace_back(ErrorInfo {
-                                              "previous declaration of "+prev->value,
+                                              "previous declaration of `"+prev->value+"'",
                                               prev->pos});
                         res = false;
                     }

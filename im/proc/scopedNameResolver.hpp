@@ -272,7 +272,7 @@ namespace dci::idl::im::proc
                 if(_reportErrors)
                 {
                     _errors.emplace_back(ErrorInfo {
-                                          "unable to resolve type name: " + scopedName.toString(),
+                                          "unable to resolve type name `"+scopedName.toString()+"'",
                                           scopedName.pos});
                 }
 
@@ -287,7 +287,7 @@ namespace dci::idl::im::proc
             if(_reportErrors)
             {
                 _errors.emplace_back(ErrorInfo {
-                                      "unable to resolve type name: " + scopedName.toString(),
+                                      "unable to resolve type name `"+scopedName.toString()+"'",
                                       scopedName.pos});
             }
 
@@ -451,7 +451,7 @@ namespace dci::idl::im::proc
                     if(_reportErrors)
                     {
                         _errors.emplace_back(ErrorInfo {
-                                              "resolved type name is incompatible: " + sn->toString(),
+                                              "resolved type name is incompatible `"+sn->toString()+"'",
                                               sn->pos});
                     }
                     res = false;

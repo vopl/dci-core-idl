@@ -23,6 +23,8 @@ namespace dci::idl::im
             res += ": ";
         }
 
+        res += "error: ";
+
         if(!_message.empty())
         {
             res += _message;
