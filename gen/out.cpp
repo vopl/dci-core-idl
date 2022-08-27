@@ -9,6 +9,7 @@
 #include <iostream>
 #include <dci/utils/dbg.hpp>
 #include <filesystem>
+#include <utility>
 
 namespace dci::idl::gen
 {
