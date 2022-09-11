@@ -168,8 +168,8 @@ namespace dci::idl::gen::executor
     {
         switch(v->kind)
         {
-        case PrimitiveKind::void_:
-            _out<<nameInPrimitives("void_");
+        case PrimitiveKind::none:
+            _out<<nameInPrimitives("None");
             break;
         case PrimitiveKind::bool_:
             _out<<nameInPrimitives("bool_");

@@ -18,7 +18,7 @@ namespace dci::idl::prs
     {
     public:
         Error(const Error&) = default;
-        explicit Error(const std::string& msg, Iterator pos);
+        explicit Error(const std::string_view& msg, Iterator pos);
         ~Error() override;
 
         Error& operator=(const Error&) = default;

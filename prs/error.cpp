@@ -9,9 +9,9 @@
 
 namespace dci::idl::prs
 {
-    Error::Error(const std::string& msg, Iterator pos)
-        : std::runtime_error(msg)
-        , _pos(pos)
+    Error::Error(const std::string_view& msg, Iterator pos)
+        : std::runtime_error{std::string{msg}}
+        , _pos{pos}
     {
     }
 

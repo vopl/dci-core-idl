@@ -12,7 +12,7 @@ scope h3
 
         /////////////////////////////////////////////////////
         in rn();
-        in rv() -> void;
+        in rv() -> none;
         in rb() -> bool;
         in ri8() -> int8;
         in ri16() -> int16;

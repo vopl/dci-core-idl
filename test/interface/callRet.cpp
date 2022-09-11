@@ -26,7 +26,7 @@ TEST(idl, interface_callRet)
         int callMarker = 0;
 
         o->rn()         += [&](){callMarker=1;};
-        o->rv()         += [&](){callMarker=2;return dci::cmt::readyFuture<void>();};
+        o->rv()         += [&](){callMarker=2;return dci::cmt::readyFuture(None{});};
         o->rb()         += [&](){callMarker=3;return dci::cmt::readyFuture(true);};
         o->ri8()        += [&](){callMarker=4;return dci::cmt::readyFuture(int8{4});};
         o->ri16()       += [&](){callMarker=5;return dci::cmt::readyFuture(int16{5});};

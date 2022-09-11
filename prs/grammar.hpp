@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "im/ast.hpp"
 #include "error.hpp"
 #include "state.hpp"
 
@@ -15,31 +14,11 @@
 #include <boost/spirit/home/x3/auxiliary/eps.hpp>
 #include <boost/spirit/home/x3/core/call.hpp>
 #include <boost/spirit/home/x3/support/unused.hpp>
-#include <cctype>
-
-//https://github.com/boostorg/spirit/issues/675
-// в 1.76 стреляет, по идее в 1.77 вольют фикс
-namespace boost::spirit::x3
-{
-    struct classify_workaround: char_encoding::standard
-    {
-        typedef unsigned char char_type;
-    };
-
-    template <>
-    struct char_class_base<char_encoding::standard>: char_class_base<classify_workaround>
-    {};
-}
-//https://github.com/boostorg/spirit/issues/675
-
-namespace dci::idl::prs
-{
-    namespace x3 = boost::spirit::x3;
-}
 
 namespace dci::idl::prs::grammar
 {
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    namespace x3 = boost::spirit::x3;
     using namespace im::ast;
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
@@ -53,44 +32,24 @@ namespace dci::idl::prs::grammar
         ];
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-    constexpr x3::rule<struct quotedString_tag, std::string> quotedString {""};
-    constexpr auto quotedString_def = x3::lexeme[x3::lit('"') >> *((x3::char_-'"') | (x3::lit('\\') >> (x3::char_('"') | x3::char_('\\')))) >> x3::lit('"')];
-    BOOST_SPIRIT_DEFINE(quotedString)
-
-    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-    constexpr x3::rule<struct identifier_tag, std::string> identifier {""};
-    constexpr auto identifier_def = x3::lexeme[(x3::alpha|x3::char_('_')) >> *(x3::alnum|x3::digit|x3::char_('_'))];
-    BOOST_SPIRIT_DEFINE(identifier)
-
-    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-    struct KwParser : x3::parser<KwParser>
+    struct kw : x3::parser<kw>
     {
         using attribute_type = x3::unused_type;
 
-        constexpr KwParser(const char* sample)
-          : _sample{sample}
-        {}
+        constexpr kw(std::string_view value) : _value{value} {}
 
-        template <typename Iterator, typename Context>
-        bool parse(Iterator& first, const Iterator& last, const Context& context, x3::unused_type, x3::unused_type) const
+        bool parse(Iterator& first, const Iterator& last, const auto& context, x3::unused_type, x3::unused_type) const
         {
             x3::skip_over(first, last, context);
 
-            const char* sample = _sample;
-            Iterator iter = first;
+            auto [iter, valueEnd] = std::mismatch(first, last, _value.begin(), _value.end());
 
-            while(*sample)
+            if(valueEnd != _value.end())
             {
-                if(iter == last || *sample != *iter)
-                {
-                    return false;
-                }
-
-                ++sample;
-                ++iter;
+                return false;
             }
 
-            if(iter != last && (std::isalnum(*iter) || std::isdigit(*iter) || '_' == *iter))
+            if(iter != last && (std::isalnum(static_cast<unsigned char>(*iter)) || '_' == *iter))
             {
                 return false;
             }
@@ -99,28 +58,21 @@ namespace dci::idl::prs::grammar
             return true;
         }
 
-        const char* _sample;
+    private:
+        std::string_view _value;
     };
 
-    constexpr auto kw(const char *value)
-    {
-        return KwParser{value};
-        //return identifier[([value](auto& ctx) { if(x3::_attr(ctx) != value) x3::_pass(ctx) = false; })];
-    }
-
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-    constexpr x3::rule<struct integerString_tag, std::string> integerString {""};
-    constexpr auto integerString_def = x3::lexeme[(x3::string("0x") >> *x3::xdigit) | (-x3::char_('-') >> *x3::digit)];
-    BOOST_SPIRIT_DEFINE(integerString)
-
-    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-    constexpr auto error(const char *msg)
+    constexpr auto error(std::string_view msg)
     {
         return x3::eps[([=](auto& ctx){ throw Error{msg, x3::_where(ctx).begin()}; })];
     }
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
 #define ALL                                     \
+        ONE(identifier,     std::string)        \
+        ONE(quotedString,   std::string)        \
+        ONE(integerString,  std::string)        \
         ONE(primitive,      Primitive)          \
         ONE(tuple,          Tuple)              \
         ONE(list,           List)               \
@@ -161,10 +113,19 @@ namespace dci::idl::prs::grammar
 #undef ONE
 
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    constexpr auto identifier_def = x3::lexeme[(x3::alpha|x3::char_('_')) >> *(x3::alnum|x3::digit|x3::char_('_'))];
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    constexpr auto quotedString_def = x3::lexeme[x3::lit('"') >> *((x3::char_-'"') | (x3::lit('\\') >> (x3::char_('"') | x3::char_('\\')))) >> x3::lit('"')];
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
+    constexpr auto integerString_def = x3::lexeme[(x3::string("0x") >> *x3::xdigit) | (-x3::char_('-') >> *x3::digit)];
+
+    /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     constexpr auto primitive_def =
         x3::eps[([](auto& ctx) { x3::_val(ctx) = std::make_shared<SPrimitive>(); })] >>
         (
-            kw("void")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::void_;       })] |
+            kw("none")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::none;        })] |
             kw("bool")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::bool_;       })] |
             kw("int8")     [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int8;        })] |
             kw("int16")    [([](auto& ctx) { x3::_val(ctx)->kind = PrimitiveKind::int16;       })] |

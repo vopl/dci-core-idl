@@ -103,10 +103,10 @@ namespace dci::idl::prs
         try
         {
             Iterator iter{begin};
-            bool r = x3::phrase_parse(
+            bool r = boost::spirit::x3::phrase_parse(
                 iter,
                 end,
-                x3::with<State>(*this)[grammar::file],
+                boost::spirit::x3::with<State>(*this)[grammar::file],
                 grammar::skipper,
                 res);
 

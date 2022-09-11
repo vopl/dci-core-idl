@@ -13,7 +13,7 @@ namespace dci::idl::im::ast
 {
     enum class PrimitiveKind
     {
-        void_,
+        none,
 
         bool_,
 
@@ -43,7 +43,7 @@ namespace dci::idl::im::ast
 
     struct SPrimitive
     {
-        PrimitiveKind   kind{PrimitiveKind::void_};
+        PrimitiveKind   kind{PrimitiveKind::none};
 
         Sign            sign;
     };
