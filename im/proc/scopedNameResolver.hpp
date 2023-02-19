@@ -307,8 +307,7 @@ namespace dci::idl::im::proc
         }
 
     public:
-        template <class T>
-        bool operator()(const T& v)
+        bool operator()(const auto& v)
         {
             bool res = true;
 
@@ -327,7 +326,7 @@ namespace dci::idl::im::proc
             res &= resolveTupleTypes(v.get());
             res &= resolveVariantTypes(v.get());
 
-            endResolveScope(outerScope);
+            endResolveScope(v.get(), outerScope);
 
             return res;
         }
@@ -349,11 +348,6 @@ namespace dci::idl::im::proc
         }
 
         /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-        bool beginResolveScope(...)
-        {
-            return true;
-        }
-
         bool beginResolveScope(SScope* v, SScope *&outerScope)
         {
             outerScope = _currentScope;
@@ -363,16 +357,21 @@ namespace dci::idl::im::proc
             return res;
         }
 
+        bool beginResolveScope(auto, SScope *&)
+        {
+            return true;
+        }
+
         /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
-        void endResolveScope(...)
+        void endResolveScope(SScope*, SScope* outerScope)
+        {
+            _currentScope = outerScope;
+        }
+
+        void endResolveScope(auto, SScope*)
         {
         }
 
-        void endResolveScope(SScope* v, SScope* outerScope)
-        {
-            (void)v;
-            _currentScope = outerScope;
-        }
 
         /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
         bool resolveBases(...)
