@@ -1586,9 +1586,8 @@ namespace dci::idl::gen::executor
                             }
 
                             _out<<nameInSparesC("Arg")<<"<";
-                            _out<<nameInSbs("wire::transfer::Arg")<<"<";
                             walk(param->type);
-                            _out<<">, "<<argIndex<<"> auto&&";
+                            _out<<", "<<argIndex<<"> auto&&";
 
                             writeMethodParamName(param, argIndex);
                             argIndex++;

@@ -13,8 +13,6 @@ namespace dci::idl::contract
 {
     template<typename A, typename T, int seed=0>
     concept Arg =
-            std::is_same_v<A, const T&> ||
-            std::is_same_v<A, T&&> ||
             std::is_constructible_v<T, A> ||
-            std::is_convertible_v<T, A>;
+            std::is_convertible_v<A, T>;
 }
