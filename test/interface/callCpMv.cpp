@@ -297,8 +297,6 @@ TEST(idl, interface_callCpMv)
         {
             EXPECT_EQ(a, "42");
             slot2Called = true;
-            String utilizer(std::move(a));
-            (void)utilizer;
         };
 
         String s("42");
