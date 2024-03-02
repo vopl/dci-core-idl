@@ -11,7 +11,7 @@
 
 namespace dci::idl::interface
 {
-    bool Lid::fromText(const String& text)
+    bool Lid::fromIidText(const String& text)
     {
         Id id;
         if(!id.fromText(text))
@@ -25,7 +25,7 @@ namespace dci::idl::interface
         return true;
     }
 
-    String Lid::toText() const
+    String Lid::toIidText() const
     {
         Id id {contract::lidRegistry.get(_clid), _side};
 

@@ -18,8 +18,8 @@ namespace dci::idl::interface
         contract::Lid   _clid;
         Side            _side;
 
-        bool API_DCI_IDL fromText(const String& text);
-        String API_DCI_IDL toText() const;
+        bool API_DCI_IDL fromIidText(const String& text);
+        String API_DCI_IDL toIidText() const;
 
         explicit operator bool() const;
         bool operator !() const;
