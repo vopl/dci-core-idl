@@ -36,6 +36,7 @@
 #include "idl/interface/methods.hpp"
 #include "idl/interface/methodsBase.hpp"
 #include "idl/interface/exception/methodNotConnected.hpp"
+#include "idl/interface/exception/methodNotImplemented.hpp"
 
 #include "idl/iSide.hpp"
 #include "idl/iId.hpp"
