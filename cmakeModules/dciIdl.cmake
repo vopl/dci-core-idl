@@ -2,7 +2,7 @@
 function(dciIdl target gen)
 
     include(CMakeParseArguments)
-    cmake_parse_arguments(OPTS "" "NAME;OUTPUT" "OPTIONS;SOURCES;INCLUDE" ${ARGN})
+    cmake_parse_arguments(OPTS "" "NAME;OUTPUT;ARTEFACTS" "OPTIONS;SOURCES;INCLUDE" ${ARGN})
 
     if(OPTS_NAME)
         set(NAME ${OPTS_NAME})
@@ -21,6 +21,11 @@ function(dciIdl target gen)
     else()
         set(outFile ${outDir}/${NAME}.hpp)
     endif()
+
+    if(OPTS_ARTEFACTS)
+        set(${OPTS_ARTEFACTS} ${outFile} PARENT_SCOPE)
+    endif()
+
 
     file(MAKE_DIRECTORY ${outDir})
     target_include_directories(${target} PRIVATE ${outDir})
